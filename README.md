@@ -1,3 +1,3 @@
-# restaurant-recommender
+# Restaurant Recommender app
 This repo contains the Android app for my Final Year Project.
-Bachelor in Information Technology (Software Engineering major)
+Bachelor in Software Engineering.
