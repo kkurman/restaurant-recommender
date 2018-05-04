@@ -1,13 +1,15 @@
 package com.example.karina.restaurantrecommender;
 
 public class FoodMenuItem {
-    public int price;
+    public int idFood, price, quantity;
     public String nameFood, description;
 
-    public FoodMenuItem(String nameFood, String description, int price) {
+    public FoodMenuItem(int idFood, String nameFood, String description, int price, int quantity) {
+        this.idFood = idFood;
         this.nameFood = nameFood;
         this.description = description;
         this.price = price;
+        this.quantity = 0;
     }
 
 //    public FoodMenuItem() {

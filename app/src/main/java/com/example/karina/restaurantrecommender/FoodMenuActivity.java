@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +44,11 @@ public class FoodMenuActivity extends AppCompatActivity {
         return json;
     }
 
+//    public void checkout() {
+//        for (int i = 0; i < foodMenuItems.size(); i++) {
+//            foodMenuItems.get(i);
+//        }
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +73,7 @@ public class FoodMenuActivity extends AppCompatActivity {
                 String description = jsonPart.getString("description");
                 int price = jsonPart.getInt("price");
 
-                foodMenuItems.add(new FoodMenuItem(nameFood, description, price));
+                foodMenuItems.add(new FoodMenuItem(idFood, nameFood, description, price, 0));
                 Log.i("main", String.valueOf(foodMenuItems));
             }
 
