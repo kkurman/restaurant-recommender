@@ -77,48 +77,48 @@ public class RestaurantActivity extends AppCompatActivity {
             ratingTextView.setText(String.valueOf(obj.getDouble("rating")));
             ratingBar.setRating((float)(obj.getDouble("rating")));
 
-           String workingHours = obj.getString("workingHours");
-           String address = obj.getString("address");
-           String cuisine = obj.getString("cuisine");
+            String workingHours = obj.getString("workingHours");
+            String address = obj.getString("address");
+            String cuisine = obj.getString("cuisine");
 
-           restaurantId = obj.getInt("idRestaurant");
+            restaurantId = obj.getInt("idRestaurant");
 
-           String description = "Working hours: " + workingHours +"\nAddress: " + address +"\nCuisine: " + cuisine;
+            String description = "Working hours: " + workingHours +"\nAddress: " + address +"\nCuisine: " + cuisine;
             restaurantInfoTextView.setText(description);
 
-           ImageDownloader task = new ImageDownloader();
-           Bitmap myImage;
-           try {
-              myImage = task.execute(obj.getString("image")).get();
-              restaurantPicture.setImageBitmap(myImage);
-           } catch (Exception e) {
-              e.printStackTrace();
-           }
+            ImageDownloader task = new ImageDownloader();
+            Bitmap myImage;
+            try {
+                myImage = task.execute(obj.getString("image")).get();
+                restaurantPicture.setImageBitmap(myImage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-   public class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
+    public class ImageDownloader extends AsyncTask<String, Void, Bitmap> {
 
-      @Override
-      protected Bitmap doInBackground(String... urls) {
-         try {
-            URL url = new URL(urls[0]);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
-            InputStream inputStream = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(inputStream);
+        @Override
+        protected Bitmap doInBackground(String... urls) {
+            try {
+                URL url = new URL(urls[0]);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+                InputStream inputStream = connection.getInputStream();
+                Bitmap myBitmap = BitmapFactory.decodeStream(inputStream);
 
-            return myBitmap;
+                return myBitmap;
 
-         } catch (MalformedURLException e) {
-            e.printStackTrace();
-         } catch (IOException e) {
-            e.printStackTrace();
-         }
-         return null;
-      }
-   }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
 }

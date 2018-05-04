@@ -17,73 +17,73 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-   ListView restaurantsListView;
-   ArrayList<String> restaurantNames = new ArrayList<>();
-   ArrayList<Integer> restaurantIds = new ArrayList<>();
+    ListView restaurantsListView;
+    ArrayList<String> restaurantNames = new ArrayList<>();
+    ArrayList<Integer> restaurantIds = new ArrayList<>();
 
-   // Used to load the 'native-lib' library on application startup.
-   static {
-      System.loadLibrary("native-lib");
-   }
+    // Used to load the 'native-lib' library on application startup.
+    static {
+        System.loadLibrary("native-lib");
+    }
 
-   public void logInRegister(View view) {
-      Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-      startActivity(intent);
-   }
+    public void logInRegister(View view) {
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        startActivity(intent);
+    }
 
-   public String loadJSONFromAsset() {
-      String json = null;
-      try {
-         InputStream is = getAssets().open("restaurantlist.json");
-         int size = is.available();
-         byte[] buffer = new byte[size];
-         is.read(buffer);
-         is.close();
-         json = new String(buffer, "UTF-8");
-      } catch (IOException ex) {
-         ex.printStackTrace();
-         return null;
-      }
-      return json;
-   }
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getAssets().open("restaurantlist.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
 
-   @Override
-   protected void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      setContentView(R.layout.activity_main);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
 //        // Example of a call to a native method
 //        TextView tv = (TextView) findViewById(R.id.sample_text);
 //        tv.setText(stringFromJNI());
 
-      restaurantsListView = findViewById(R.id.restaurants_dynamic);
+        restaurantsListView = findViewById(R.id.restaurants_dynamic);
 
-      try {
-         JSONObject obj = new JSONObject(loadJSONFromAsset());
+        try {
+            JSONObject obj = new JSONObject(loadJSONFromAsset());
 
-         String info = obj.getString("restaurantList");
+            String info = obj.getString("restaurantList");
 
-         JSONArray array = new JSONArray(info);
-         for (int i = 0; i < array.length(); i++) {
-            JSONObject jsonPart = array.getJSONObject(i);
-            restaurantIds.add(jsonPart.getInt("idRestaurant"));
-            restaurantNames.add(jsonPart.getString("name"));
-         }
-      } catch (JSONException e) {
-         e.printStackTrace();
-      }
+            JSONArray array = new JSONArray(info);
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject jsonPart = array.getJSONObject(i);
+                restaurantIds.add(jsonPart.getInt("idRestaurant"));
+                restaurantNames.add(jsonPart.getString("name"));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-      ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, restaurantNames);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, restaurantNames);
 
-      restaurantsListView.setAdapter(arrayAdapter);
+        restaurantsListView.setAdapter(arrayAdapter);
 
-      restaurantsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-         @Override
-         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Intent myIntent = new Intent(getApplicationContext(), RestaurantActivity.class);
-            myIntent.putExtra("restaurantId", restaurantIds.get(position));
-            startActivity(myIntent);
-         }
-      });
-   }
+        restaurantsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent myIntent = new Intent(getApplicationContext(), RestaurantActivity.class);
+                myIntent.putExtra("restaurantId", restaurantIds.get(position));
+                startActivity(myIntent);
+            }
+        });
+    }
 }

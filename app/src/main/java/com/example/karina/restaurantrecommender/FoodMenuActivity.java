@@ -80,7 +80,7 @@ public class FoodMenuActivity extends AppCompatActivity {
             FoodMenuItemAdapter adapter = new FoodMenuItemAdapter(this, foodMenuItems);
             foodMenuListView.setAdapter(adapter);
         } catch (Exception e) {
-              e.printStackTrace();
+            e.printStackTrace();
         }
 
 //        FoodMenuItemAdapter adapter = new FoodMenuItemAdapter(getApplicationContext(), foodMenuItems);
