@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ public class FoodMenuActivity extends AppCompatActivity {
     int restaurantId, menuId;
     ListView foodMenuListView;
     ArrayList<FoodMenuItem> foodMenuItems = new ArrayList<>();
+    ArrayList<FoodMenuItem> orderItems = new ArrayList<>();
 
 
     public String loadJSONFromAsset() {
@@ -44,11 +46,15 @@ public class FoodMenuActivity extends AppCompatActivity {
         return json;
     }
 
-//    public void checkout() {
-//        for (int i = 0; i < foodMenuItems.size(); i++) {
-//            foodMenuItems.get(i);
-//        }
-//    }
+    public void checkout(View view) {
+        for (int i = 0; i < foodMenuItems.size(); i++) {
+            if (foodMenuItems.get(i).quantity > 0) {
+                orderItems.add(foodMenuItems.get(i));
+            }
+        }
+
+        JSONArray array = new JSONArray(orderItems);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +80,6 @@ public class FoodMenuActivity extends AppCompatActivity {
                 int price = jsonPart.getInt("price");
 
                 foodMenuItems.add(new FoodMenuItem(idFood, nameFood, description, price, 0));
-                Log.i("main", String.valueOf(foodMenuItems));
             }
 
         } catch (JSONException e) {
