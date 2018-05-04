@@ -75,7 +75,6 @@ public class FoodMenuItemAdapter extends ArrayAdapter<FoodMenuItem> {
 }
 
 
-//
 //import android.content.Context;
 //import android.support.annotation.NonNull;
 //import android.view.LayoutInflater;
