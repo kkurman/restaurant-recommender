@@ -15,4 +15,6 @@
         completions."
     </string>
     <string name="log_in_register">Log In/Register</string>
+    <string name="order_details">Order Details</string>
+    <string name="customer">Customer:</string>
 </resources>

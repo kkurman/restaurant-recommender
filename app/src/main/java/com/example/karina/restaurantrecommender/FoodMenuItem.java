@@ -1,10 +1,13 @@
 package com.example.karina.restaurantrecommender;
 
-public class FoodMenuItem {
-    public int idFood, price, quantity;
-    public String nameFood, description;
+import java.io.Serializable;
 
-    public FoodMenuItem(int idFood, String nameFood, String description, int price, int quantity) {
+public class FoodMenuItem implements Serializable {
+    public int idFood, quantity;
+    public String nameFood, description;
+    public double price;
+
+    public FoodMenuItem(int idFood, String nameFood, String description, double price, int quantity) {
         this.idFood = idFood;
         this.nameFood = nameFood;
         this.description = description;

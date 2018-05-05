@@ -30,13 +30,18 @@ public class FoodMenuActivity extends AppCompatActivity {
     ArrayList<FoodMenuItem> orderItems = new ArrayList<>();
 
     public void checkout(View view) {
+        orderItems.clear();
         for (int i = 0; i < foodMenuItems.size(); i++) {
             if (foodMenuItems.get(i).quantity > 0) {
                 orderItems.add(foodMenuItems.get(i));
             }
         }
 
-        JSONArray array = new JSONArray(orderItems);
+//        JSONArray array = new JSONArray(orderItems);
+
+        Intent intent = new Intent(getApplicationContext(), OrderActivity.class);
+        intent.putExtra("orderArray", orderItems);
+        startActivity(intent);
     }
 
 //    public String loadJSONFromAsset() {
@@ -111,7 +116,7 @@ public class FoodMenuActivity extends AppCompatActivity {
                     int idFood = jsonPart.getInt("idFood");
                     String nameFood = jsonPart.getString("nameFood");
                     String description = jsonPart.getString("description");
-                    int price = jsonPart.getInt("price");
+                    double price = jsonPart.getDouble("price");
 
                     foodMenuItems.add(new FoodMenuItem(idFood, nameFood, description, price, 0));
                 }
