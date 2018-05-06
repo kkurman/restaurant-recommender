@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
         AsyncHttpClient client = new AsyncHttpClient();
 
-        client.get("http://192.168.0.2:8044/restaurants", new JsonHttpResponseHandler() {
+        client.get("http://shidfar.dlinkddns.com:8044/restaurants", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 putThemIn(response);

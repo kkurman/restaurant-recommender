@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -87,6 +88,8 @@ public class RestaurantActivity extends AppCompatActivity {
         restaurantPicture = findViewById(R.id.restaurantImageView);
         submitRatingTextView = findViewById(R.id.submitRatingTextView);
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         addListenerOnRatingBar();
 
         AsyncHttpClient client = new AsyncHttpClient();
@@ -96,7 +99,7 @@ public class RestaurantActivity extends AppCompatActivity {
         Intent intent = getIntent();
         id = String.valueOf(intent.getIntExtra("restaurantId", -1));
 
-        url = "http://192.168.0.2:8044/restaurants/description/" + id;
+        url = "http://shidfar.dlinkddns.com:8044/restaurants/description/" + id;
 
         client.get(url, new JsonHttpResponseHandler() {
             @Override

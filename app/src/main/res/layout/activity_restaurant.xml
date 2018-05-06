@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:fillViewport="false"
     android:orientation="vertical"
     android:paddingLeft="5dp"
@@ -92,10 +92,10 @@
                 android:id="@+id/ratingTextView"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:text="5.0"
-                android:textSize="24sp"
-                android:layout_gravity="center"/>
+                android:textSize="24sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -123,10 +123,26 @@
         <TextView
             android:id="@+id/textView2"
             android:layout_width="match_parent"
-            android:layout_height="176dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="TextView"
-            android:textColor="@android:color/black" />
+            android:text="Reviews"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/reviewEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Leave your review..."
+            android:inputType="textMultiLine"
+            android:textSize="14sp" />
+
+        <ListView
+            android:id="@+id/reviewListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
     </LinearLayout>
 

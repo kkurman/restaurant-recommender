@@ -104,7 +104,7 @@ public class FoodMenuActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         id = String.valueOf(intent.getIntExtra("restaurantId", -1));
-        url = "http://192.168.0.2:8044/restaurants/menu/" + id;
+        url = "http://shidfar.dlinkddns.com:8044/restaurants/menu/" + id;
 
         AsyncHttpClient client = new AsyncHttpClient();
 

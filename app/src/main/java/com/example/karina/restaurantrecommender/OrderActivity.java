@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
 import android.view.View;
+import android.widget.TextView;
+
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -24,11 +26,18 @@ public class OrderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_order);
 
         ListView orderListView = findViewById(R.id.orderListView);
+        TextView totalAmountTextView = findViewById(R.id.totalAmountTextView);
 
         Intent intent = getIntent();
         orderArray = (ArrayList<FoodMenuItem>)intent.getSerializableExtra("orderArray");
 
-        Log.i("order", orderArray.toString());
+        double totalAmount = 0;
+
+        for (int i = 0; i < orderArray.size(); i++) {
+            totalAmount += (double) orderArray.get(i).quantity * orderArray.get(i).price;
+        }
+
+        totalAmountTextView.setText(" RM " + String.valueOf(totalAmount));
 
         OrderAdapter orderAdapter = new OrderAdapter(getApplicationContext(), orderArray);
         orderListView.setAdapter(orderAdapter);
