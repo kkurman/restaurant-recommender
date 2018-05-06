@@ -8,10 +8,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,6 +27,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import cz.msebera.android.httpclient.Header;
 
 public class RestaurantActivity extends AppCompatActivity {
 
@@ -38,123 +44,34 @@ public class RestaurantActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-//    public String loadJSONFromAsset() {
-//        String json = null;
-//        String fileName;
-//
-//        Intent intent = getIntent();
-//        fileName = String.valueOf(intent.getIntExtra("restaurantId", -1)) + ".json";
-//
-//        try {
-//            InputStream is = getAssets().open(fileName);
-//            int size = is.available();
-//            byte[] buffer = new byte[size];
-//            is.read(buffer);
-//            is.close();
-//            json = new String(buffer, "UTF-8");
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//            return null;
-//        }
-//        return json;
-//    }
+    public void loadImage(String imageUrl) throws Exception {
+        ImageDownloader task = new ImageDownloader();
+        Bitmap myImage;
+        myImage = task.execute(imageUrl).get();
+        restaurantPicture.setImageBitmap(myImage);
+    }
 
-    public class DownloadTask extends AsyncTask<String, Void, String> {
+    public void putThemIn(JSONObject jsonObject) {
+        try {
+            restaurantNameTextView.setText(jsonObject.getString("name"));
+            ratingTextView.setText(String.valueOf(jsonObject.getDouble("rating")));
+            ratingBar.setRating((float)(jsonObject.getDouble("rating")));
 
-        @Override
-        protected String doInBackground(String... urls) {
-            String result = "";
-            URL url;
-            HttpURLConnection connection;
+            String workingHours = jsonObject.getString("workingHours");
+            String address = jsonObject.getString("address");
+            String cuisine = jsonObject.getString("cuisine");
 
-            try {
-                url = new URL(urls[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                InputStream inputStream = connection.getInputStream();
-                InputStreamReader reader = new InputStreamReader(inputStream);
+            restaurantId = jsonObject.getInt("idRestaurant");
 
-                int data = reader.read();
-
-                while(data != -1) {
-                    char current = (char) data;
-                    result += current;
-                    data = reader.read();
-                }
-
-                return result;
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return null;
+            String description = "Working hours: " + workingHours +"\nAddress: " + address +"\nCuisine: " + cuisine;
+            restaurantInfoTextView.setText(description);
+            String imageUrl = jsonObject.getString("image");
+            loadImage(imageUrl);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            try {
-                JSONObject jsonObject = new JSONObject(result);
-
-                restaurantNameTextView.setText(jsonObject.getString("name"));
-                ratingTextView.setText(String.valueOf(jsonObject.getDouble("rating")));
-                ratingBar.setRating((float)(jsonObject.getDouble("rating")));
-
-                String workingHours = jsonObject.getString("workingHours");
-                String address = jsonObject.getString("address");
-                String cuisine = jsonObject.getString("cuisine");
-
-                restaurantId = jsonObject.getInt("idRestaurant");
-
-                String description = "Working hours: " + workingHours +"\nAddress: " + address +"\nCuisine: " + cuisine;
-                restaurantInfoTextView.setText(description);
-
-                ImageDownloader task = new ImageDownloader();
-                Bitmap myImage;
-                try {
-                    myImage = task.execute(jsonObject.getString("image")).get();
-                    restaurantPicture.setImageBitmap(myImage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-//            try {
-//                JSONObject obj = new JSONObject(loadJSONFromAsset());
-//
-//                restaurantNameTextView.setText(obj.getString("name"));
-//                ratingTextView.setText(String.valueOf(obj.getDouble("rating")));
-//                ratingBar.setRating((float)(obj.getDouble("rating")));
-//
-//                String workingHours = obj.getString("workingHours");
-//                String address = obj.getString("address");
-//                String cuisine = obj.getString("cuisine");
-//
-//                restaurantId = obj.getInt("idRestaurant");
-//
-//                String description = "Working hours: " + workingHours +"\nAddress: " + address +"\nCuisine: " + cuisine;
-//                restaurantInfoTextView.setText(description);
-//
-//                ImageDownloader task = new ImageDownloader();
-//                Bitmap myImage;
-//                try {
-//                    myImage = task.execute(obj.getString("image")).get();
-//                    restaurantPicture.setImageBitmap(myImage);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-
-        }
-
     }
 
     @Override
@@ -172,14 +89,21 @@ public class RestaurantActivity extends AppCompatActivity {
 
         addListenerOnRatingBar();
 
+        AsyncHttpClient client = new AsyncHttpClient();
+
         String url;
         String id;
         Intent intent = getIntent();
         id = String.valueOf(intent.getIntExtra("restaurantId", -1));
 
         url = "http://192.168.0.2:8044/restaurants/description/" + id;
-        DownloadTask task = new DownloadTask();
-        task.execute(url);
+
+        client.get(url, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                putThemIn(response);
+            }
+        });
     }
 
     public void addListenerOnRatingBar() {

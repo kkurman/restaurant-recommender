@@ -1,7 +1,6 @@
 package com.example.karina.restaurantrecommender;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,17 +9,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import com.loopj.android.http.*;
+
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
     ListView restaurantsListView;
@@ -44,92 +39,20 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-//    public String loadJSONFromAsset() {
-//        String json = null;
-//        try {
-//            InputStream is = getAssets().open("restaurantlist.json");
-//            int size = is.available();
-//            byte[] buffer = new byte[size];
-//            is.read(buffer);
-//            is.close();
-//            json = new String(buffer, "UTF-8");
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//            return null;
-//        }
-//        return json;
-//    }
-
-    public class DownloadTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... urls) {
-            String result = "";
-            URL url;
-            HttpURLConnection connection;
-
-            try {
-                url = new URL(urls[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                InputStream inputStream = connection.getInputStream();
-                InputStreamReader reader = new InputStreamReader(inputStream);
-
-                int data = reader.read();
-
-                while(data != -1) {
-                    char current = (char) data;
-                    result += current;
-                    data = reader.read();
-                }
-
-                return result;
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+    public void putThemIn(JSONObject jsonObject) {
+        try {
+            JSONArray array = jsonObject.getJSONArray("restaurantList");
+            JSONObject obj;
+            for (int i = 0; i<array.length(); i++) {
+                obj = array.getJSONObject(i);
+                restaurantIds.add(obj.getInt("idRestaurant"));
+                restaurantNames.add(obj.getString("name"));
             }
-
-            return null;
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, restaurantNames);
+            restaurantsListView.setAdapter(arrayAdapter);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            try {
-                JSONObject jsonObject = new JSONObject(result);
-
-                String info = jsonObject.getString("restaurantList");
-                Log.i("Content", info);
-
-                JSONArray array = new JSONArray(info);
-                for (int i = 0; i<array.length(); i++) {
-                    JSONObject jsonPart = array.getJSONObject(i);
-                    restaurantIds.add(jsonPart.getInt("idRestaurant"));
-                    restaurantNames.add(jsonPart.getString("name"));
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-//            try {
-//                JSONObject obj = new JSONObject(loadJSONFromAsset());
-//
-//                String info = obj.getString("restaurantList");
-//
-//                JSONArray array = new JSONArray(info);
-//                for (int i = 0; i < array.length(); i++) {
-//                    JSONObject jsonPart = array.getJSONObject(i);
-//                    restaurantIds.add(jsonPart.getInt("idRestaurant"));
-//                    restaurantNames.add(jsonPart.getString("name"));
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-        }
-
     }
 
     @Override
@@ -144,12 +67,14 @@ public class MainActivity extends AppCompatActivity {
 
         restaurantsListView = findViewById(R.id.restaurants_dynamic);
 
-        DownloadTask task = new DownloadTask();
-        task.execute("http://192.168.0.2:8044/restaurants");
+        AsyncHttpClient client = new AsyncHttpClient();
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, restaurantNames);
-
-        restaurantsListView.setAdapter(arrayAdapter);
+        client.get("http://192.168.0.2:8044/restaurants", new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                putThemIn(response);
+            }
+        });
 
         restaurantsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

@@ -11,6 +11,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +25,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 public class FoodMenuActivity extends AppCompatActivity {
     int restaurantId, menuId;
@@ -65,89 +70,28 @@ public class FoodMenuActivity extends AppCompatActivity {
 //        return json;
 //    }
 
-    public class DownloadTask extends AsyncTask<String, Void, String> {
+    public void putThemIn(JSONObject jsonObject) {
+        try {
+            restaurantId = jsonObject.getInt("idRestaurant");
+            menuId = jsonObject.getInt("idMenu");
+            JSONArray array = jsonObject.getJSONArray("menuList");
+            JSONObject obj;
+            for (int i = 0; i<array.length(); i++) {
+                obj = array.getJSONObject(i);
+                int idFood = obj.getInt("idFood");
+                String nameFood = obj.getString("nameFood");
+                String description = obj.getString("description");
+                double price = obj.getDouble("price");
 
-        @Override
-        protected String doInBackground(String... urls) {
-            String result = "";
-            URL url;
-            HttpURLConnection connection;
+                foodMenuItems.add(new FoodMenuItem(idFood, nameFood, description, price, 0));
 
-            try {
-                url = new URL(urls[0]);
-                connection = (HttpURLConnection) url.openConnection();
-                InputStream inputStream = connection.getInputStream();
-                InputStreamReader reader = new InputStreamReader(inputStream);
-
-                int data = reader.read();
-
-                while(data != -1) {
-                    char current = (char) data;
-                    result += current;
-                    data = reader.read();
-                }
-
-                return result;
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+            FoodMenuItemAdapter adapter = new FoodMenuItemAdapter(this, foodMenuItems);
+            foodMenuListView.setAdapter(adapter);
 
-            return null;
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            try {
-                JSONObject jsonObject = new JSONObject(result);
-
-                restaurantId = jsonObject.getInt("idRestaurant");
-                menuId = jsonObject.getInt("idMenu");
-                String menuList = jsonObject.getString("menuList");
-
-                JSONArray array = new JSONArray(menuList);
-                for (int i = 0; i<array.length(); i++) {
-                    JSONObject jsonPart = array.getJSONObject(i);
-
-                    int idFood = jsonPart.getInt("idFood");
-                    String nameFood = jsonPart.getString("nameFood");
-                    String description = jsonPart.getString("description");
-                    double price = jsonPart.getDouble("price");
-
-                    foodMenuItems.add(new FoodMenuItem(idFood, nameFood, description, price, 0));
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-//            try {
-//                JSONObject jsonObject = new JSONObject(loadJSONFromAsset());
-//
-//                restaurantId = jsonObject.getInt("idRestaurant");
-//                menuId = jsonObject.getInt("idMenu");
-//                String menuList = jsonObject.getString("menuList");
-//
-//                JSONArray array = new JSONArray(menuList);
-//                for (int i = 0; i<array.length(); i++) {
-//                    JSONObject jsonPart = array.getJSONObject(i);
-//
-//                    int idFood = jsonPart.getInt("idFood");
-//                    String nameFood = jsonPart.getString("nameFood");
-//                    String description = jsonPart.getString("description");
-//                    int price = jsonPart.getInt("price");
-//
-//                    foodMenuItems.add(new FoodMenuItem(idFood, nameFood, description, price, 0));
-//                }
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-        }
-
     }
 
     @Override
@@ -161,16 +105,16 @@ public class FoodMenuActivity extends AppCompatActivity {
         Intent intent = getIntent();
         id = String.valueOf(intent.getIntExtra("restaurantId", -1));
         url = "http://192.168.0.2:8044/restaurants/menu/" + id;
-        DownloadTask task = new DownloadTask();
-        task.execute(url);
+
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        client.get(url, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                putThemIn(response);
+            }
+        });
 
         foodMenuListView = findViewById(R.id.foodMenuListView);
-
-        try {
-            FoodMenuItemAdapter adapter = new FoodMenuItemAdapter(this, foodMenuItems);
-            foodMenuListView.setAdapter(adapter);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
