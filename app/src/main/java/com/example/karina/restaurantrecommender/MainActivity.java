@@ -32,9 +32,16 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
-    public void logInRegister(View view) {
+    public void logIn(View view) {
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
+        finish();
+    }
+
+    public void registerProfile(View view) {
+        Intent intent = new Intent(getApplicationContext(), RegistrationActivity.class);
+        startActivity(intent);
+        finish();
     }
 
 //    public String loadJSONFromAsset() {
@@ -128,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.v(".. >>", "OnCreate");
         setContentView(R.layout.activity_main);
 
 //        // Example of a call to a native method
@@ -151,5 +159,18 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(myIntent);
             }
         });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.v(".. >>", "OnRestart...");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.v(".. >>", "OnResume...");
+
     }
 }

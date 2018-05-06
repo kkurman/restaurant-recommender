@@ -26,7 +26,7 @@ import java.net.URL;
 
 public class RestaurantActivity extends AppCompatActivity {
 
-    TextView restaurantNameTextView, restaurantInfoTextView, ratingTextView;
+    TextView restaurantNameTextView, restaurantInfoTextView, ratingTextView, submitRatingTextView;
     RatingBar ratingBar;
     Button viewMenuButton;
     ImageView restaurantPicture;
@@ -163,20 +163,41 @@ public class RestaurantActivity extends AppCompatActivity {
         setContentView(R.layout.activity_restaurant);
 
         restaurantNameTextView = findViewById(R.id.restaurantNameTextView);
-        ratingBar = findViewById(R.id.ratingBar);
+        ratingBar = findViewById(R.id.restaurantRatingBar);
         restaurantInfoTextView = findViewById(R.id.restaurantInfoTextView);
         viewMenuButton = findViewById(R.id.viewMenuButton);
         ratingTextView = findViewById(R.id.ratingTextView);
         restaurantPicture = findViewById(R.id.restaurantImageView);
+        submitRatingTextView = findViewById(R.id.submitRatingTextView);
+
+        addListenerOnRatingBar();
 
         String url;
         String id;
-
         Intent intent = getIntent();
         id = String.valueOf(intent.getIntExtra("restaurantId", -1));
+
         url = "http://192.168.0.2:8044/restaurants/description/" + id;
         DownloadTask task = new DownloadTask();
         task.execute(url);
+    }
+
+    public void addListenerOnRatingBar() {
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                String message = "Rate restaurant with " + String.valueOf((int)rating) + " stars";
+                submitRatingTextView.setText(message);
+            }
+        });
+    }
+
+    public void submitRating(View view) {
+        Intent intent = getIntent();
+        int id = intent.getIntExtra("restaurantId", -1);
+        int rating = (int) ratingBar.getRating();
+
+        Log.i("rating", String.valueOf(id) + " " + String.valueOf(rating));
     }
 
     public class ImageDownloader extends AsyncTask<String, Void, Bitmap> {

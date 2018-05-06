@@ -56,6 +56,15 @@
             android:layout_weight="1"
             android:text="TextView" />
 
+        <Button
+            android:id="@+id/viewMenuButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_weight="1"
+            android:onClick="viewMenu"
+            android:text="Menu" />
+
         <TextView
             android:id="@+id/textView3"
             android:layout_width="match_parent"
@@ -72,12 +81,12 @@
             android:orientation="horizontal">
 
             <RatingBar
-                android:id="@+id/ratingBar"
+                android:id="@+id/restaurantRatingBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:numStars="5"
-                android:stepSize="0.1" />
+                android:stepSize="1.0" />
 
             <TextView
                 android:id="@+id/ratingTextView"
@@ -89,14 +98,27 @@
                 android:layout_gravity="center"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/viewMenuButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:onClick="viewMenu"
-            android:text="Order"
-            android:layout_gravity="end"/>
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/submitRatingTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="TextView"
+                android:textColor="@android:color/darker_gray" />
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="submitRating"
+                android:text="Rate" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/textView2"

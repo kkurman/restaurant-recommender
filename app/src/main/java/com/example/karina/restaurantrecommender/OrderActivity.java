@@ -4,12 +4,19 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.view.View;
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 
 public class OrderActivity extends AppCompatActivity {
+    ArrayList<FoodMenuItem> orderArray;
+
+    public void completeOrder(View view) {
+        JSONArray array = new JSONArray(orderArray);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +26,7 @@ public class OrderActivity extends AppCompatActivity {
         ListView orderListView = findViewById(R.id.orderListView);
 
         Intent intent = getIntent();
-        ArrayList<FoodMenuItem> orderArray = (ArrayList<FoodMenuItem>)intent.getSerializableExtra("orderArray");
+        orderArray = (ArrayList<FoodMenuItem>)intent.getSerializableExtra("orderArray");
 
         Log.i("order", orderArray.toString());
 
