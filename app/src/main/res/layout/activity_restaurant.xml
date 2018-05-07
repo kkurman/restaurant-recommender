@@ -25,6 +25,60 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/restaurants_dynamic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/userEmailTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="user email"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:visibility="invisible" />
+
+                <TextView
+                    android:id="@+id/goBackTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="goBack"
+                    android:text="@string/go_to_restaurants_list" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/logOutButton"
+                android:layout_width="75dp"
+                android:layout_height="35dp"
+                android:layout_marginRight="2dp"
+                android:onClick="logOut"
+                android:text="Log Out"
+                android:textSize="12sp"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/restaurantNameTextView"
             android:layout_width="match_parent"
@@ -114,7 +168,7 @@
 
             <Button
                 android:id="@+id/button3"
-                android:layout_width="wrap_content"
+                android:layout_width="85dp"
                 android:layout_height="wrap_content"
                 android:onClick="submitRating"
                 android:text="Rate" />
@@ -128,15 +182,29 @@
             android:text="Reviews"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/reviewEditText"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:ems="10"
-            android:hint="Leave your review..."
-            android:inputType="textMultiLine"
-            android:textSize="14sp" />
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/reviewEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="Leave your review..."
+                android:inputType="textMultiLine"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="85dp"
+                android:layout_height="wrap_content"
+                android:onClick="submitReview"
+                android:text="Submit" />
+        </LinearLayout>
 
         <ListView
             android:id="@+id/reviewListView"

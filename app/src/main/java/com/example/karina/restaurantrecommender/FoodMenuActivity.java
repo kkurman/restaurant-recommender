@@ -1,6 +1,8 @@
 package com.example.karina.restaurantrecommender;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,8 +10,10 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -33,42 +37,32 @@ public class FoodMenuActivity extends AppCompatActivity {
     ListView foodMenuListView;
     ArrayList<FoodMenuItem> foodMenuItems = new ArrayList<>();
     ArrayList<FoodMenuItem> orderItems = new ArrayList<>();
+    SharedPreferences sharedPreferences;
+    String email = "";
+    int accountId = -1;
+    TextView userEmailTextView;
+    Button logOutButton;
 
     public void checkout(View view) {
-        orderItems.clear();
-        for (int i = 0; i < foodMenuItems.size(); i++) {
-            if (foodMenuItems.get(i).quantity > 0) {
-                orderItems.add(foodMenuItems.get(i));
-            }
+        if (accountId == -1) {
+            Toast.makeText(FoodMenuActivity.this, "Please, log in to order", Toast.LENGTH_SHORT).show();
         }
+        else {
+            orderItems.clear();
+            for (int i = 0; i < foodMenuItems.size(); i++) {
+                if (foodMenuItems.get(i).quantity > 0) {
+                    orderItems.add(foodMenuItems.get(i));
+                }
+            }
+
 
 //        JSONArray array = new JSONArray(orderItems);
 
-        Intent intent = new Intent(getApplicationContext(), OrderActivity.class);
-        intent.putExtra("orderArray", orderItems);
-        startActivity(intent);
+            Intent intent = new Intent(getApplicationContext(), OrderActivity.class);
+            intent.putExtra("orderArray", orderItems);
+            startActivity(intent);
+        }
     }
-
-//    public String loadJSONFromAsset() {
-//        String json = null;
-//        String fileName;
-//
-//        Intent intent = getIntent();
-//        fileName = String.valueOf(intent.getIntExtra("restaurantId", -1)) + "menu.json";
-//
-//        try {
-//            InputStream is = getAssets().open(fileName);
-//            int size = is.available();
-//            byte[] buffer = new byte[size];
-//            is.read(buffer);
-//            is.close();
-//            json = new String(buffer, "UTF-8");
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//            return null;
-//        }
-//        return json;
-//    }
 
     public void putThemIn(JSONObject jsonObject) {
         try {
@@ -99,6 +93,11 @@ public class FoodMenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_menu);
 
+        userEmailTextView = findViewById(R.id.userEmailTextView);
+        logOutButton = findViewById(R.id.logOutButton);
+
+        userSharedPreferences();
+
         String url;
         String id;
 
@@ -116,5 +115,33 @@ public class FoodMenuActivity extends AppCompatActivity {
         });
 
         foodMenuListView = findViewById(R.id.foodMenuListView);
+    }
+
+    public void goBack(View view) {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    public void logOut(View view) {
+        sharedPreferences.edit().clear().apply();
+        userSharedPreferences();
+    }
+
+    public void userSharedPreferences() {
+        sharedPreferences = FoodMenuActivity.this.getSharedPreferences("com.example.karina.restaurantrecommender", Context.MODE_PRIVATE);
+        email = sharedPreferences.getString("email", "");
+        accountId = sharedPreferences.getInt("accountId", -1);
+
+        if (!email.isEmpty() && accountId != -1) {
+            logOutButton.setVisibility(View.VISIBLE);
+            userEmailTextView.setVisibility(View.VISIBLE);
+
+            userEmailTextView.setText(email);
+        }
+        else {
+            logOutButton.setVisibility(View.INVISIBLE);
+            userEmailTextView.setVisibility(View.INVISIBLE);
+        }
     }
 }
