@@ -40,7 +40,7 @@ public class RegistrationActivity extends AppCompatActivity {
             try {
                 profile.put("email", email);
                 profile.put("password", password);
-                profile.put("phone number", phone);
+                profile.put("phoneNumber", phone);
                 profile.put("address", address);
 
             } catch (JSONException e) {

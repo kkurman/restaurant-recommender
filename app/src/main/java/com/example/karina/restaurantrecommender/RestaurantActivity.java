@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
@@ -48,6 +50,7 @@ public class RestaurantActivity extends AppCompatActivity {
     int accountId = -1;
     TextView userEmailTextView, reviewEditText;
     Button logOutButton;
+    ListView reviewListView;
 
     public void viewMenu(View view) {
         Intent intent = new Intent(getApplicationContext(), FoodMenuActivity.class);
@@ -100,6 +103,7 @@ public class RestaurantActivity extends AppCompatActivity {
         logOutButton = findViewById(R.id.logOutButton);
         userEmailTextView = findViewById(R.id.userEmailTextView);
         reviewEditText = findViewById(R.id.reviewEditText);
+        reviewListView = findViewById(R.id.reviewListView);
 
         Intent intent = getIntent();
         restaurantId = intent.getIntExtra("restaurantId", -1);
@@ -120,6 +124,40 @@ public class RestaurantActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 putThemIn(response);
+            }
+        });
+
+//        {
+//            "reviewList": [
+//            {
+//                "idReview": 1,
+//                  "userEmail": "joseph.stalin@gulak.com",
+//                  "review": "Nice Restaurant. Diecent food. everything is great. Well done!"
+//            }
+//    ]
+//        }
+
+        String urlReview = "http://shidfar.dlinkddns.com:8044/restaurants/reviews/" + restaurantId;
+
+        client.get(urlReview, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+
+                ArrayList<Review> reviews = new ArrayList<>();
+                try {
+                    JSONArray array = response.getJSONArray("reviewList");
+                    JSONObject obj;
+                    for (int i = 0; i<array.length(); i++) {
+                        obj = array.getJSONObject(i);
+                        reviews.add(new Review(obj.getString("userEmail"), obj.getString("review")));
+                    }
+
+                    ReviewAdapter adapter = new ReviewAdapter(RestaurantActivity.this, reviews);
+                    reviewListView.setAdapter(adapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

@@ -28,18 +28,30 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class OrderActivity extends AppCompatActivity {
     ArrayList<FoodMenuItem> orderArray;
-    TextView customerTextView;
+    TextView customerTextView, totalAmountTextView;
     SharedPreferences sharedPreferences;
+    int accountId;
+    String email;
 
     public void completeOrder(View view) {
         JSONArray array = new JSONArray(orderArray);
 
-        if (array.length() > 0) {
+        if (array.length() > 0 && accountId != -1) {
+//            JSONObject object = new JSONObject();
+//
+//            try {
+//                accountId = sharedPreferences.getInt("accountId", -1);
+//                object.put("orderDetails", array);
+//                object.put("accountId", accountId);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
 //            AsyncHttpClient client = new AsyncHttpClient();
 //
 //            StringEntity entity = null;
 //            try {
-//                entity = new StringEntity(array.toString());
+//                entity = new StringEntity(object.toString());
 //            } catch (UnsupportedEncodingException e) {
 //                e.printStackTrace();
 //            }
@@ -67,15 +79,15 @@ public class OrderActivity extends AppCompatActivity {
 //                    super.onFailure(statusCode, headers, responseString, throwable);
 //                    if (statusCode != 200) {
 //                        Log.i(">>>", responseString);
-//                        Toast.makeText(LoginActivity.this, "This email is not registered", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(OrderActivity.this, "This email is not registered", Toast.LENGTH_SHORT).show();
 //                    }
 //                }
 //            };
-//
-////            client.post(this, "http://shidfar.dlinkddns.com:8044/user/login", entity, "application/json", responseHandler);
-//        }
+
+//            client.post(this, url, entity, "application/json", responseHandler);
             AlertDialog.Builder builder = new AlertDialog.Builder(OrderActivity.this);
-            builder.setMessage("Yor order is completed!")
+            builder.setMessage("Customer: " + email + "\nTotal: " + totalAmountTextView.getText().toString())
+                  .setTitle("Your order is accepted!")
                   .setCancelable(false)
                   .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                       public void onClick(DialogInterface dialog, int id) {
@@ -99,12 +111,12 @@ public class OrderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_order);
 
         ListView orderListView = findViewById(R.id.orderListView);
-        TextView totalAmountTextView = findViewById(R.id.totalAmountTextView);
+        totalAmountTextView = findViewById(R.id.totalAmountTextView);
         customerTextView = findViewById(R.id.customerTextView);
 
         sharedPreferences = OrderActivity.this.getSharedPreferences("com.example.karina.restaurantrecommender", Context.MODE_PRIVATE);
-        String email = sharedPreferences.getString("email", "");
-        int accountId = sharedPreferences.getInt("accountId", -1);
+        email = sharedPreferences.getString("email", "");
+        accountId = sharedPreferences.getInt("accountId", -1);
 
         customerTextView.setText(email);
 

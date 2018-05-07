@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -18,18 +17,21 @@ import org.json.*;
 import com.loopj.android.http.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
     ListView restaurantsListView;
-    ArrayList<String> restaurantNames = new ArrayList<>();
-    ArrayList<Integer> restaurantIds = new ArrayList<>();
+    ArrayList<Restaurant> restaurants = new ArrayList<>();
     SharedPreferences sharedPreferences;
     TextView userEmailTextView;
     Button logOutButton, logInButton, registerButton;
     String email = "";
     int accountId = -1;
+    RestaurantsAdapter arrayAdapter;
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -59,15 +61,30 @@ public class MainActivity extends AppCompatActivity {
             JSONObject obj;
             for (int i = 0; i<array.length(); i++) {
                 obj = array.getJSONObject(i);
-                restaurantIds.add(obj.getInt("idRestaurant"));
-                restaurantNames.add(obj.getString("name"));
+                restaurants.add(new Restaurant(obj.getInt("idRestaurant"), obj.getString("name"), obj.getDouble("rating")));
             }
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, restaurantNames);
+            arrayAdapter = new RestaurantsAdapter(this, restaurants);
             restaurantsListView.setAdapter(arrayAdapter);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+    public void sortRestaurants(View view) {
+        sortData(false);
+    }
+
+    private void sortData(boolean asc) {
+        //SORT ARRAY ASCENDING AND DESCENDING
+        if (asc) {
+            Collections.sort(restaurants);
+        } else {
+            Collections.reverse(restaurants);
+        }
+
+        restaurantsListView.setAdapter(new RestaurantsAdapter(this, restaurants));
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent myIntent = new Intent(getApplicationContext(), RestaurantActivity.class);
-                myIntent.putExtra("restaurantId", restaurantIds.get(position));
+                myIntent.putExtra("restaurantId", restaurants.get(position).idRestaurant);
                 startActivity(myIntent);
                 finish();
             }
