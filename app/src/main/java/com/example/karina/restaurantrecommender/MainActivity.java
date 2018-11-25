@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 import org.json.*;
 
 import com.loopj.android.http.*;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,11 +37,59 @@ public class MainActivity extends AppCompatActivity {
     int accountId = -1;
     RestaurantsAdapter arrayAdapter;
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.user_menu, menu);
+
+        if (ParseUser.getCurrentUser() == null) {
+
+            menu.removeItem(R.id.username);
+            menu.removeItem(R.id.logout);
+
+        } else {
+
+            menu.findItem(R.id.username).setTitle(ParseUser.getCurrentUser().getUsername());
+            menu.removeItem(R.id.login);
+            menu.removeItem(R.id.signup);
+
+        }
+
+        return super.onCreateOptionsMenu(menu);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.logout) {
+
+            ParseUser.logOut();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.login) {
+
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.signup) {
+
+            Intent intent = new Intent(this, RegistrationActivity.class);
+            startActivity(intent);
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
     }
 
+    /*
     public void logIn(View view) {
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
@@ -68,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public void sortRestaurants(View view) {
         sortData(false);
@@ -92,15 +144,16 @@ public class MainActivity extends AppCompatActivity {
         Log.v(".. >>", "OnCreate");
         setContentView(R.layout.activity_main);
 
-        logInButton = findViewById(R.id.logInButton);
-        registerButton = findViewById(R.id.registerButton);
+        setTitle("Restaurants List");
+
         logOutButton = findViewById(R.id.logOutButton);
         userEmailTextView = findViewById(R.id.userEmailTextView);
 
-        userSharedPreferences();
+//        userSharedPreferences();
 
         restaurantsListView = findViewById(R.id.restaurants_dynamic);
 
+        /*
         AsyncHttpClient client = new AsyncHttpClient();
 
         client.get("http://shidfar.dlinkddns.com:8044/restaurants", new JsonHttpResponseHandler() {
@@ -118,9 +171,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(myIntent);
                 finish();
             }
-        });
+        });*/
     }
 
+    /*
     public void userSharedPreferences() {
         sharedPreferences = MainActivity.this.getSharedPreferences("com.example.karina.restaurantrecommender", Context.MODE_PRIVATE);
         email = sharedPreferences.getString("email", "");
@@ -140,8 +194,9 @@ public class MainActivity extends AppCompatActivity {
             logOutButton.setVisibility(View.INVISIBLE);
             userEmailTextView.setVisibility(View.INVISIBLE);
         }
-    }
+    }*/
 
+    /*
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -153,5 +208,5 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         Log.v(".. >>", "OnResume...");
 
-    }
+    }*/
 }

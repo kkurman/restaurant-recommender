@@ -1,9 +1,6 @@
 package com.example.karina.restaurantrecommender;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
-import android.content.Context;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -36,6 +33,9 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,28 +53,45 @@ public class LoginActivity extends AppCompatActivity{
 
     TextView emailEditText;
     EditText passwordEditText;
-    String email;
-    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-//        // Set up the login form.
+
+        setTitle("Login");
+
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
 
-        Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
+        if (ParseUser.getCurrentUser() != null) {
+
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+
+        }
 
     }
 
-    public void attemptLogin() {
+    public void login(View view) {
+
+        ParseUser.logInInBackground(emailEditText.getText().toString(), passwordEditText.getText().toString(), new LogInCallback() {
+            @Override
+            public void done(ParseUser user, ParseException e) {
+
+                if (user != null) {
+
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+
+                } else {
+
+                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+
+                }
+            }
+        });
+        /*
         email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
         if (email.matches("") || password.matches("")) {
@@ -134,7 +151,7 @@ public class LoginActivity extends AppCompatActivity{
 
             client.post(this, "http://shidfar.dlinkddns.com:8044/user/login", entity, "application/json",
                   responseHandler);
-        }
+        }*/
     }
 
 }

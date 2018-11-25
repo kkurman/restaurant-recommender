@@ -53,7 +53,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             }
                             case ParseException.EMAIL_TAKEN: {
 
-                                Toast.makeText(getApplicationContext(), "This email is already registered", Toast.LENGTH_LONG).show();
+                                Toast.makeText(RegistrationActivity.this, "This email is already registered", Toast.LENGTH_LONG).show();
                                 break;
                             }
                             default: {
