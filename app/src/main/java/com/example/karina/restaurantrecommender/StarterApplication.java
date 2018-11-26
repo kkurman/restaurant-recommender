@@ -1,8 +1,15 @@
 package com.example.karina.restaurantrecommender;
 
 import android.app.Application;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
+import android.util.Log;
 
 import com.parse.Parse;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+
+import java.io.ByteArrayOutputStream;
 
 public class StarterApplication extends Application {
 

@@ -3,12 +3,10 @@ package com.example.karina.restaurantrecommender;
 import android.support.annotation.NonNull;
 
 public class Restaurant implements Comparable <Restaurant> {
-    public int idRestaurant;
     public String restaurantName;
     public double restaurantRating;
 
-    public Restaurant(int idRestaurant, String restaurantName, double restaurantRating) {
-        this.idRestaurant = idRestaurant;
+    public Restaurant(String restaurantName, double restaurantRating) {
         this.restaurantName = restaurantName;
         this.restaurantRating = restaurantRating;
     }
