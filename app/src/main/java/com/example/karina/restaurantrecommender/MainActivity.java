@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.parse.FindCallback;
@@ -108,6 +109,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         restaurantsListView = findViewById(R.id.restaurants_dynamic);
+
+        restaurantsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Intent intent = new Intent(getApplicationContext(), RestaurantActivity.class);
+                intent.putExtra("name", restaurants.get(position).restaurantName);
+                startActivity(intent);
+            }
+        });
 
 
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Restaurant");
