@@ -37,7 +37,7 @@ public class OrderAdapter extends ArrayAdapter<FoodMenuItem> {
         costTextView.setText(costValue);
 
         // Populate the data into the template view using the data object
-        foodNameTextView.setText(foodMenuItem.nameFood);
+        foodNameTextView.setText(foodMenuItem.foodName);
         foodPriceTextView.setText(String.valueOf(foodMenuItem.price));
         quantityTextView.setText(String.valueOf(foodMenuItem.quantity));
         // Return the completed view to render on screen

@@ -66,7 +66,7 @@ public class FoodMenuItemAdapter extends ArrayAdapter<FoodMenuItem> {
         });
 
         // Populate the data into the template view using the data object
-        foodName.setText(foodMenuItem.nameFood);
+        foodName.setText(foodMenuItem.foodName);
         foodDesc.setText(foodMenuItem.description);
         foodPrice.setText(String.valueOf(foodMenuItem.price));
         // Return the completed view to render on screen

@@ -17,6 +17,11 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,22 +34,20 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
 public class FoodMenuActivity extends AppCompatActivity {
-    int restaurantId, menuId;
+
     ListView foodMenuListView;
     ArrayList<FoodMenuItem> foodMenuItems = new ArrayList<>();
     ArrayList<FoodMenuItem> orderItems = new ArrayList<>();
-    SharedPreferences sharedPreferences;
-    String email = "";
-    int accountId = -1;
-    TextView userEmailTextView;
-    Button logOutButton;
+    FoodMenuItemAdapter foodMenuItemAdapter;
+    String restaurantName;
 
     public void checkout(View view) {
-        if (accountId == -1) {
+        if (ParseUser.getCurrentUser() == null) {
             Toast.makeText(FoodMenuActivity.this, "Please, log in to order", Toast.LENGTH_SHORT).show();
         }
         else {
@@ -55,15 +58,13 @@ public class FoodMenuActivity extends AppCompatActivity {
                 }
             }
 
-
-//        JSONArray array = new JSONArray(orderItems);
-
             Intent intent = new Intent(getApplicationContext(), OrderActivity.class);
             intent.putExtra("orderArray", orderItems);
             startActivity(intent);
         }
     }
 
+    /*
     public void putThemIn(JSONObject jsonObject) {
         try {
             restaurantId = jsonObject.getInt("idRestaurant");
@@ -87,61 +88,44 @@ public class FoodMenuActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_menu);
 
-        userEmailTextView = findViewById(R.id.userEmailTextView);
-        logOutButton = findViewById(R.id.logOutButton);
-
-        userSharedPreferences();
-
-        String url;
-        String id;
-
         Intent intent = getIntent();
-        id = String.valueOf(intent.getIntExtra("restaurantId", -1));
-        url = "http://shidfar.dlinkddns.com:8044/restaurants/menu/" + id;
-
-        AsyncHttpClient client = new AsyncHttpClient();
-
-        client.get(url, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                putThemIn(response);
-            }
-        });
+        restaurantName = intent.getStringExtra("name");
 
         foodMenuListView = findViewById(R.id.foodMenuListView);
-    }
 
-    public void goBack(View view) {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
+        foodMenuItemAdapter = new FoodMenuItemAdapter(FoodMenuActivity.this, foodMenuItems);
 
-    public void logOut(View view) {
-        sharedPreferences.edit().clear().apply();
-        userSharedPreferences();
-    }
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Menu");
 
-    public void userSharedPreferences() {
-        sharedPreferences = FoodMenuActivity.this.getSharedPreferences("com.example.karina.restaurantrecommender", Context.MODE_PRIVATE);
-        email = sharedPreferences.getString("email", "");
-        accountId = sharedPreferences.getInt("accountId", -1);
+        query.whereEqualTo("restaurantName", restaurantName);
 
-        if (!email.isEmpty() && accountId != -1) {
-            logOutButton.setVisibility(View.VISIBLE);
-            userEmailTextView.setVisibility(View.VISIBLE);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
 
-            userEmailTextView.setText(email);
-        }
-        else {
-            logOutButton.setVisibility(View.INVISIBLE);
-            userEmailTextView.setVisibility(View.INVISIBLE);
-        }
+                if (e == null) {
+
+                    if (objects.size() > 0) {
+
+                        for (ParseObject object:objects) {
+
+                            foodMenuItems.add(new FoodMenuItem(object.getString("foodName"),
+                                  object.getString("description"), object.getDouble("price"), 0));
+
+                        }
+
+                        foodMenuListView.setAdapter(foodMenuItemAdapter);
+
+                    }
+                }
+            }
+        });
     }
 }

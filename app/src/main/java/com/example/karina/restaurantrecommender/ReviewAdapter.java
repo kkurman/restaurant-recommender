@@ -24,11 +24,11 @@ public class ReviewAdapter extends ArrayAdapter<Review> {
         Review review = getItem(position);
 
         // Lookup view for data population
-        TextView reviewEmailTextView = convertView.findViewById(R.id.reviewEmailTextView);
+        TextView reviewUsernameTextView = convertView.findViewById(R.id.reviewUsernameTextView);
         TextView reviewBodyTextView = convertView.findViewById(R.id.reviewBodyTextView);
 
         // Populate the data into the template view using the data object
-        reviewEmailTextView.setText(review.userEmail);
+        reviewUsernameTextView.setText(review.username);
         reviewBodyTextView.setText(review.review);
         // Return the completed view to render on screen
         return convertView;

@@ -32,6 +32,7 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,6 +60,9 @@ public class RestaurantActivity extends AppCompatActivity {
     String restaurantName;
     TextView reviewEditText;
     ListView reviewListView;
+
+    ArrayList<Review> reviews = new ArrayList<>();
+    ReviewAdapter reviewAdapter;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -117,6 +121,8 @@ public class RestaurantActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant);
+
+        reviewAdapter = new ReviewAdapter(RestaurantActivity.this, reviews);
 
         ratingBar = findViewById(R.id.restaurantRatingBar);
         restaurantInfoTextView = findViewById(R.id.restaurantInfoTextView);
@@ -179,6 +185,31 @@ public class RestaurantActivity extends AppCompatActivity {
                 }
             }
         });
+
+        ParseQuery<ParseObject> query1 = new ParseQuery<ParseObject>("Review");
+
+        query1.whereEqualTo("restaurantName", restaurantName);
+
+        query1.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+
+                if (e == null) {
+
+                    if (objects.size() > 0) {
+
+                        for (ParseObject object:objects) {
+
+                            reviews.add(new Review(object.getString("username"), object.getString("review")));
+
+                        }
+
+                        reviewListView.setAdapter(reviewAdapter);
+
+                    }
+                }
+            }
+        });
     }
 
     public void addListenerOnRatingBar() {
@@ -192,39 +223,59 @@ public class RestaurantActivity extends AppCompatActivity {
     }
 
     public void submitRating(View view) {
-        int rating = (int) ratingBar.getRating();
 
         if (ParseUser.getCurrentUser() == null) {
             Toast.makeText(this, "Please, log in to rate restaurant", Toast.LENGTH_SHORT).show();
         }
         else {
-            JSONObject restaurantRate = new JSONObject();
-            try {
-//                restaurantRate.put("accountId", accountId);
-//                restaurantRate.put("restaurantId", restaurantId);
-                restaurantRate.put("rating", rating);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            AsyncHttpClient client = new AsyncHttpClient();
 
-            StringEntity entity = null;
-            try {
-                entity = new StringEntity(restaurantRate.toString());
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Rating");
 
-            JsonHttpResponseHandler responseHandler = new JsonHttpResponseHandler() {
+            query.whereNotEqualTo("restaurantName", restaurantName);
+            query.whereNotEqualTo("username", ParseUser.getCurrentUser());
+
+            query.findInBackground(new FindCallback<ParseObject>() {
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    super.onSuccess(statusCode, headers, response);
+                public void done(List<ParseObject> objects, ParseException e) {
 
-                    Toast.makeText(RestaurantActivity.this, "You have rated this restaurant", Toast.LENGTH_SHORT).show();
+                    if (e == null) {
+
+                        if (objects.size() > 0) {
+
+                            int rating = (int) ratingBar.getRating();
+
+                            ParseObject object = new ParseObject("Rating");
+                            object.put("username", ParseUser.getCurrentUser().getUsername());
+                            object.put("restaurantName", restaurantName);
+                            object.put("rate", rating);
+
+                            object.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(com.parse.ParseException e) {
+                                    if (e == null) {
+                                        Log.i("Parse Result", "Successful");
+                                        Toast.makeText(RestaurantActivity.this, "You rated this restaurant", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Log.i("Parse Result", "Failed");
+                                        Toast.makeText(RestaurantActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+
+                        } else {
+
+                            Toast.makeText(RestaurantActivity.this, "You already rated this restaurant",
+                                  Toast.LENGTH_LONG).show();
+
+                        }
+
+                    } else {
+
+                        Toast.makeText(RestaurantActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                        Log.i("rating", e.getMessage());
+                    }
                 }
-            };
-
-//            client.post(this, "http://shidfar.dlinkddns.com:8044/user/login", entity, "application/json", responseHandler);
+            });
         }
     }
 
@@ -235,35 +286,24 @@ public class RestaurantActivity extends AppCompatActivity {
             Toast.makeText(this, "Please, log in to leave a review", Toast.LENGTH_SHORT).show();
         }
         else {
-            JSONObject restaurantReview = new JSONObject();
-            try {
-//                restaurantReview.put("accountId", accountId);
-//                restaurantReview.put("restaurantId", restaurantId);
-                restaurantReview.put("review", review);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            AsyncHttpClient client = new AsyncHttpClient();
 
-            StringEntity entity = null;
-            try {
-                entity = new StringEntity(restaurantReview.toString());
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            ParseObject object = new ParseObject("Review");
+            object.put("username", ParseUser.getCurrentUser().getUsername());
+            object.put("restaurantName", restaurantName);
+            object.put("review", review);
 
-            JsonHttpResponseHandler responseHandler = new JsonHttpResponseHandler() {
+            object.saveInBackground(new SaveCallback() {
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    super.onSuccess(statusCode, headers, response);
-
-                    Toast.makeText(RestaurantActivity.this, "Your review is posted", Toast.LENGTH_SHORT).show();
-
-//                    postReviewList();
+                public void done(com.parse.ParseException e) {
+                    if (e == null) {
+                        Log.i("Parse Result", "Successful");
+                        Toast.makeText(RestaurantActivity.this, "Your review is posted", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.i("Parse Result", "Failed");
+                        Toast.makeText(RestaurantActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 }
-            };
-
-//            client.post(this, "http://shidfar.dlinkddns.com:8044/user/login", entity, "application/json", responseHandler);
+            });
         }
     }
 }

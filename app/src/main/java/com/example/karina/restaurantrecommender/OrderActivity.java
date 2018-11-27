@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,64 +30,15 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 public class OrderActivity extends AppCompatActivity {
     ArrayList<FoodMenuItem> orderArray;
     TextView customerTextView, totalAmountTextView;
-    SharedPreferences sharedPreferences;
-    int accountId;
-    String email;
+
+    String username = ParseUser.getCurrentUser().getUsername();
 
     public void completeOrder(View view) {
-        JSONArray array = new JSONArray(orderArray);
 
-        if (array.length() > 0 && accountId != -1) {
-//            JSONObject object = new JSONObject();
-//
-//            try {
-//                accountId = sharedPreferences.getInt("accountId", -1);
-//                object.put("orderDetails", array);
-//                object.put("accountId", accountId);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//            AsyncHttpClient client = new AsyncHttpClient();
-//
-//            StringEntity entity = null;
-//            try {
-//                entity = new StringEntity(object.toString());
-//            } catch (UnsupportedEncodingException e) {
-//                e.printStackTrace();
-//            }
-//
-//            JsonHttpResponseHandler responseHandler = new JsonHttpResponseHandler() {
-//                @Override
-//                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                    super.onSuccess(statusCode, headers, response);
-//
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(OrderActivity.this);
-//                    builder.setMessage("Yor order os complete!")
-//                          .setCancelable(false)
-//                          .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                              public void onClick(DialogInterface dialog, int id) {
-//                                  Intent intent = new Intent(OrderActivity.this, MainActivity.class);
-//                                  startActivity(intent);
-//                                  finish();                              }
-//                          });
-//                    AlertDialog alert = builder.create();
-//                    alert.show();
-//                }
-//
-//                @Override
-//                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                    super.onFailure(statusCode, headers, responseString, throwable);
-//                    if (statusCode != 200) {
-//                        Log.i(">>>", responseString);
-//                        Toast.makeText(OrderActivity.this, "This email is not registered", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            };
+        if ( orderArray.size() > 0 && ParseUser.getCurrentUser() != null) {
 
-//            client.post(this, url, entity, "application/json", responseHandler);
             AlertDialog.Builder builder = new AlertDialog.Builder(OrderActivity.this);
-            builder.setMessage("Customer: " + email + "\nTotal: " + totalAmountTextView.getText().toString())
+            builder.setMessage("Customer: " + username + "\nTotal: " + totalAmountTextView.getText().toString())
                   .setTitle("Your order is accepted!")
                   .setCancelable(false)
                   .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -114,11 +66,7 @@ public class OrderActivity extends AppCompatActivity {
         totalAmountTextView = findViewById(R.id.totalAmountTextView);
         customerTextView = findViewById(R.id.customerTextView);
 
-        sharedPreferences = OrderActivity.this.getSharedPreferences("com.example.karina.restaurantrecommender", Context.MODE_PRIVATE);
-        email = sharedPreferences.getString("email", "");
-        accountId = sharedPreferences.getInt("accountId", -1);
-
-        customerTextView.setText(email);
+        customerTextView.setText(username);
 
         Intent intent = getIntent();
         orderArray = (ArrayList<FoodMenuItem>)intent.getSerializableExtra("orderArray");

@@ -70,7 +70,6 @@ public class LoginActivity extends AppCompatActivity{
             startActivity(intent);
 
         }
-
     }
 
     public void login(View view) {
@@ -91,67 +90,5 @@ public class LoginActivity extends AppCompatActivity{
                 }
             }
         });
-        /*
-        email = emailEditText.getText().toString();
-        String password = passwordEditText.getText().toString();
-        if (email.matches("") || password.matches("")) {
-            Toast.makeText(this, "Email address and password are required", Toast.LENGTH_SHORT).show();
-        }
-
-        else {
-            JSONObject logInProfile = new JSONObject();
-            try {
-                logInProfile.put("email", email);
-                logInProfile.put("password", password);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            AsyncHttpClient client = new AsyncHttpClient();
-
-            StringEntity entity = null;
-            try {
-                entity = new StringEntity(logInProfile.toString());
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            JsonHttpResponseHandler responseHandler = new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    super.onSuccess(statusCode, headers, response);
-                    int accountId = -1;
-                    try {
-                        accountId = response.getInt("accountId");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    if(accountId == -1) {
-                        Log.i(" .. >> ", "could not get accountId");
-                        return;
-                    }
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-
-                    sharedPreferences = LoginActivity.this.getSharedPreferences("com.example.karina.restaurantrecommender", Context.MODE_PRIVATE);
-                    sharedPreferences.edit().putString("email", email).apply();
-                    sharedPreferences.edit().putInt("accountId", accountId).apply();
-
-                    startActivity(intent);
-                    finish();
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    super.onFailure(statusCode, headers, responseString, throwable);
-                    if (statusCode != 200) {
-                        Log.i(">>>", responseString);
-                        Toast.makeText(LoginActivity.this, "This email is not registered", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            };
-
-            client.post(this, "http://shidfar.dlinkddns.com:8044/user/login", entity, "application/json",
-                  responseHandler);
-        }*/
     }
-
 }
