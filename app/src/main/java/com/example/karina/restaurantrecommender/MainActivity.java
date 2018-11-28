@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         if (ParseUser.getCurrentUser() == null) {
 
             menu.removeItem(R.id.username);
+            menu.removeItem(R.id.myAccount);
             menu.removeItem(R.id.logout);
 
         } else {
@@ -67,6 +68,11 @@ public class MainActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.signup) {
 
             Intent intent = new Intent(this, RegistrationActivity.class);
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.myAccount) {
+
+            Intent intent = new Intent(this, UserAccountActivity.class);
             startActivity(intent);
 
         }

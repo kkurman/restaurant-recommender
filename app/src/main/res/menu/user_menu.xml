@@ -2,6 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:title="" android:id="@+id/username"/>
+    <item android:title="My account" android:id="@+id/myAccount" />
     <item android:title="Login" android:id="@+id/login" />
     <item android:title="Sign up" android:id="@+id/signup" />
     <item android:title="Logout" android:id="@+id/logout" />

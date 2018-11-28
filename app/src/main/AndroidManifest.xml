@@ -29,7 +29,9 @@
             android:label="@string/title_activity_login" />
         <activity android:name=".FoodMenuActivity" />
         <activity android:name=".OrderActivity" />
-        <activity android:name=".RegistrationActivity"></activity>
+        <activity android:name=".RegistrationActivity" />
+        <activity android:name=".UserOrderActivity" />
+        <activity android:name=".UserAccountActivity"></activity>
     </application>
 
 </manifest>

@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -42,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -50,6 +52,8 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
+
+import static java.lang.Math.round;
 
 public class RestaurantActivity extends AppCompatActivity {
 
@@ -73,6 +77,7 @@ public class RestaurantActivity extends AppCompatActivity {
         if (ParseUser.getCurrentUser() == null) {
 
             menu.removeItem(R.id.username);
+            menu.removeItem(R.id.myAccount);
             menu.removeItem(R.id.logout);
 
         } else {
@@ -106,6 +111,11 @@ public class RestaurantActivity extends AppCompatActivity {
             Intent intent = new Intent(this, RegistrationActivity.class);
             startActivity(intent);
 
+        } else if (item.getItemId() == R.id.myAccount) {
+
+            Intent intent = new Intent(this, UserAccountActivity.class);
+            startActivity(intent);
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -122,6 +132,11 @@ public class RestaurantActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant);
 
+        Intent intent = getIntent();
+        restaurantName = intent.getStringExtra("name");
+
+        setTitle(restaurantName);
+
         reviewAdapter = new ReviewAdapter(RestaurantActivity.this, reviews);
 
         ratingBar = findViewById(R.id.restaurantRatingBar);
@@ -132,11 +147,6 @@ public class RestaurantActivity extends AppCompatActivity {
         submitRatingTextView = findViewById(R.id.submitRatingTextView);
         reviewEditText = findViewById(R.id.reviewEditText);
         reviewListView = findViewById(R.id.reviewListView);
-
-        Intent intent = getIntent();
-        restaurantName = intent.getStringExtra("name");
-
-        setTitle(restaurantName);
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -156,12 +166,12 @@ public class RestaurantActivity extends AppCompatActivity {
 
                         for (ParseObject object:objects) {
 
-                            float score = (float) object.getDouble("score");
+                            float scoreBar = (float) object.getDouble("score");
                             String workingHours = "Working hours: " + object.getString("workingHours");
                             String address = "\nAddress: " + object.getString("address");
                             String cuisine = "\nCuisine: " + object.getString("cuisine");
 
-                            ratingBar.setRating(score);
+                            ratingBar.setRating(scoreBar);
                             ratingTextView.setText(String.valueOf(object.getDouble("score")));
 
                             restaurantInfoTextView.setText(workingHours + address + cuisine);
@@ -298,6 +308,7 @@ public class RestaurantActivity extends AppCompatActivity {
                     if (e == null) {
                         Log.i("Parse Result", "Successful");
                         Toast.makeText(RestaurantActivity.this, "Your review is posted", Toast.LENGTH_SHORT).show();
+                        reviewListView.setAdapter(reviewAdapter);
                     } else {
                         Log.i("Parse Result", "Failed");
                         Toast.makeText(RestaurantActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();

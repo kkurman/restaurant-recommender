@@ -1,42 +1,24 @@
 package com.example.karina.restaurantrecommender;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import cz.msebera.android.httpclient.Header;
 
 public class FoodMenuActivity extends AppCompatActivity {
 
@@ -45,6 +27,59 @@ public class FoodMenuActivity extends AppCompatActivity {
     ArrayList<FoodMenuItem> orderItems = new ArrayList<>();
     FoodMenuItemAdapter foodMenuItemAdapter;
     String restaurantName;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.user_menu, menu);
+
+        if (ParseUser.getCurrentUser() == null) {
+
+            menu.removeItem(R.id.username);
+            menu.removeItem(R.id.myAccount);
+            menu.removeItem(R.id.logout);
+
+        } else {
+
+            menu.findItem(R.id.username).setTitle(ParseUser.getCurrentUser().getUsername());
+            menu.removeItem(R.id.login);
+            menu.removeItem(R.id.signup);
+
+        }
+
+        return super.onCreateOptionsMenu(menu);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == R.id.logout) {
+
+            ParseUser.logOut();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.login) {
+
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.signup) {
+
+            Intent intent = new Intent(this, RegistrationActivity.class);
+            startActivity(intent);
+
+        } else if (item.getItemId() == R.id.myAccount) {
+
+            Intent intent = new Intent(this, UserAccountActivity.class);
+            startActivity(intent);
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     public void checkout(View view) {
         if (ParseUser.getCurrentUser() == null) {
@@ -60,35 +95,10 @@ public class FoodMenuActivity extends AppCompatActivity {
 
             Intent intent = new Intent(getApplicationContext(), OrderActivity.class);
             intent.putExtra("orderArray", orderItems);
+            intent.putExtra("restaurantName", restaurantName);
             startActivity(intent);
         }
     }
-
-    /*
-    public void putThemIn(JSONObject jsonObject) {
-        try {
-            restaurantId = jsonObject.getInt("idRestaurant");
-            menuId = jsonObject.getInt("idMenu");
-            JSONArray array = jsonObject.getJSONArray("menuList");
-            JSONObject obj;
-            for (int i = 0; i<array.length(); i++) {
-                obj = array.getJSONObject(i);
-                int idFood = obj.getInt("idFood");
-                String nameFood = obj.getString("nameFood");
-                String description = obj.getString("description");
-                double price = obj.getDouble("price");
-
-                foodMenuItems.add(new FoodMenuItem(idFood, nameFood, description, price, 0));
-
-            }
-            FoodMenuItemAdapter adapter = new FoodMenuItemAdapter(this, foodMenuItems);
-            foodMenuListView.setAdapter(adapter);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +107,8 @@ public class FoodMenuActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         restaurantName = intent.getStringExtra("name");
+
+        setTitle(restaurantName + " Menu");
 
         foodMenuListView = findViewById(R.id.foodMenuListView);
 
